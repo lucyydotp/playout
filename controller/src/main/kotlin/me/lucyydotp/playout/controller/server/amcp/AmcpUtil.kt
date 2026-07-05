@@ -1,14 +1,10 @@
 package me.lucyydotp.playout.controller.server.amcp
 
-/**
- * Thrown when an AMCP command cannot be parsed.
- */
+/** Thrown when an AMCP command cannot be parsed. */
 public class AmcpCommandParseException(message: String, public val command: String) :
     Exception(message)
 
-/**
- * Splits an AMCP command into its constituent parts.
- */
+/** Splits an AMCP command into its constituent parts. */
 internal fun splitCommand(command: String) = buildList {
     var current = StringBuilder()
     var backslash = false
@@ -41,7 +37,8 @@ internal fun splitCommand(command: String) = buildList {
 
             c == '"' -> {
                 if (!quoted) {
-                    if (current.isNotEmpty()) throw AmcpCommandParseException("Unescaped quote in argument", command)
+                    if (current.isNotEmpty())
+                        throw AmcpCommandParseException("Unescaped quote in argument", command)
                     wasQuoted = true
                 }
 
@@ -49,7 +46,8 @@ internal fun splitCommand(command: String) = buildList {
             }
 
             else -> {
-                if (wasQuoted && !quoted) throw AmcpCommandParseException("Unescaped quote in argument", command)
+                if (wasQuoted && !quoted)
+                    throw AmcpCommandParseException("Unescaped quote in argument", command)
                 current.append(c)
             }
         }

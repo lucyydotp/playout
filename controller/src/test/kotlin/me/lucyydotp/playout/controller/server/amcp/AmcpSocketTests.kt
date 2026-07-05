@@ -23,10 +23,7 @@ class AmcpSocketTests {
         val (manager) = mockOutputs()
         val socket = AmcpSocket(manager)
 
-        assertEquals(
-            "PONG",
-            socket.handle("PING")
-        )
+        assertEquals("PONG", socket.handle("PING"))
     }
 
     @Test
@@ -34,9 +31,6 @@ class AmcpSocketTests {
         val (manager) = mockOutputs()
         val socket = AmcpSocket(manager)
 
-        assertEquals(
-            "PONG foo bar",
-            socket.handle("PING foo bar")
-        )
+        assertEquals("PONG foo bar", socket.handle("PING foo bar"))
     }
 }

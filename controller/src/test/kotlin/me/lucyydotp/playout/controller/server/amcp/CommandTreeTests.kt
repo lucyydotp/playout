@@ -19,15 +19,7 @@ class CommandTreeTests {
                 "two"(two)
             }
 
-            assertEquals(
-                CommandTree.Branch(
-                    mapOf(
-                        "one" to one,
-                        "two" to two,
-                    ),
-                ),
-                tree,
-            )
+            assertEquals(CommandTree.Branch(mapOf("one" to one, "two" to two)), tree)
         }
 
         @Test
@@ -45,14 +37,9 @@ class CommandTreeTests {
             assertEquals(
                 CommandTree.Branch(
                     mapOf(
-                        "foo" to CommandTree.Branch(
-                            mapOf(
-                                "one" to one,
-                                "two" to two,
-                            ),
-                        ),
+                        "foo" to CommandTree.Branch(mapOf("one" to one, "two" to two)),
                         "bar" to three,
-                    ),
+                    )
                 ),
                 tree,
             )
@@ -94,55 +81,36 @@ class CommandTreeTests {
         @Test
         fun `finds existing shallow nodes with no arguments`() {
             val handler = CommandTree.Command { "foo" }
-            val tree = CommandTree {
-                "foo"(handler)
-            }
+            val tree = CommandTree { "foo"(handler) }
 
-            assertEquals(
-                handler to emptyList(),
-                tree.find(listOf("foo")),
-            )
+            assertEquals(handler to emptyList(), tree.find(listOf("foo")))
         }
 
         @Test
         fun `finds existing shallow nodes with arguments`() {
             val handler = CommandTree.Command { "foo" }
-            val tree = CommandTree {
-                "foo"(handler)
-            }
+            val tree = CommandTree { "foo"(handler) }
 
-            assertEquals(
-                handler to listOf("bar", "baz"),
-                tree.find(listOf("foo", "bar", "baz")),
-            )
+            assertEquals(handler to listOf("bar", "baz"), tree.find(listOf("foo", "bar", "baz")))
         }
 
         @Test
         fun `finds existing deep nodes with arguments`() {
             val handler = CommandTree.Command { "foo" }
-            val tree = CommandTree {
-                "foo bar"(handler)
-            }
+            val tree = CommandTree { "foo bar"(handler) }
 
-            assertEquals(
-                handler to listOf("baz"),
-                tree.find(listOf("foo", "bar", "baz")),
-            )
+            assertEquals(handler to listOf("baz"), tree.find(listOf("foo", "bar", "baz")))
         }
 
         @Test
         fun `returns null for non-existent nodes`() {
-            val tree = CommandTree {
-                "foo" { "foo" }
-            }
+            val tree = CommandTree { "foo" { "foo" } }
             assertEquals(null, tree.find(listOf("bar")))
         }
 
         @Test
         fun `returns null for partial deep commands`() {
-            val tree = CommandTree {
-                "foo bar baz" { "qux" }
-            }
+            val tree = CommandTree { "foo bar baz" { "qux" } }
             assertEquals(null, tree.find(listOf("foo", "bar")))
         }
     }
