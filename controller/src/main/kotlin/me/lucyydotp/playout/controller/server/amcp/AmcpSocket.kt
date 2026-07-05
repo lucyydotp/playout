@@ -18,10 +18,11 @@ public class AmcpSocket(public val outputManager: OutputManager) {
         private const val OK = "202 OK\r\n"
     }
 
-    private fun CommandContext.cgChannel() = parseChannelAndLayer(wildcardValues.first()).let {
-        (outputManager[it.first.toString()]
-            ?: throw IllegalStateException("Invalid channel")) to it.second
-    }
+    private fun CommandContext.cgChannel() =
+        parseChannelAndLayer(wildcardValues.first()).let {
+            (outputManager[it.first.toString()]
+                ?: throw IllegalStateException("Invalid channel")) to it.second
+        }
 
     private val commandTree = CommandTree {
         "PING" { (listOf("PONG") + it.arguments).joinToString(" ") }
@@ -29,11 +30,14 @@ public class AmcpSocket(public val outputManager: OutputManager) {
         "TLS" { TODO("Content catalogue") }
 
         "CG * ADD" {
-            // CG [video_channel:int]{-[layer:int]|-9999} ADD [cg_layer:int] [template:string] [play-on-load:0,1] {[data]}
+            // CG [video_channel:int]{-[layer:int]|-9999} ADD [cg_layer:int] [template:string]
+            // [play-on-load:0,1] {[data]}
             val (channel, layer) = it.cgChannel()
             val (_, template, playOnLoad) = it.arguments
-            val data = it.arguments.getOrNull(3)
-                ?.let { json -> Json.parseToJsonElement(json) as JsonObject }
+            val data =
+                it.arguments.getOrNull(3)?.let { json ->
+                    Json.parseToJsonElement(json) as JsonObject
+                }
 
             // TODO: parse content ref properly
             channel.load(layer, ContentReference.OGraf(template), data ?: JsonObject(emptyMap()))
@@ -79,12 +83,13 @@ public class AmcpSocket(public val outputManager: OutputManager) {
                 return "400 ERROR\r\n${command}\r\n"
             }
 
-        val context = try {
-            commandTree.find(parsed) ?: return "404 ERROR\r\n${command}\r\n"
-        } catch (ex: AmcpCommandParseException) {
-            logger.warn("Failed to parse ACMP command `${command}`", ex)
-            return "400 ERROR\r\n${command}\r\n"
-        }
+        val context =
+            try {
+                commandTree.find(parsed) ?: return "404 ERROR\r\n${command}\r\n"
+            } catch (ex: AmcpCommandParseException) {
+                logger.warn("Failed to parse ACMP command `${command}`", ex)
+                return "400 ERROR\r\n${command}\r\n"
+            }
         return context()
     }
 }

@@ -71,7 +71,8 @@ class AmcpSocketTests {
         fun `CG ADD parses JSON data`() {
             val (manager, output) = mockOutputs(true)
 
-            val response = AmcpSocket(manager).handle("""CG 1-10 ADD 0 template-name 0 "{\"foo\": \"bar\"}"""")
+            val response =
+                AmcpSocket(manager).handle("""CG 1-10 ADD 0 template-name 0 "{\"foo\": \"bar\"}"""")
             assertEquals("202 OK\r\n", response)
 
             val state = output.state.value[10]

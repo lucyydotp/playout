@@ -2,36 +2,24 @@ package me.lucyydotp.playout.controller.server.amcp
 
 import java.util.TreeMap
 
-/**
- * The context for a specific execution of a command.
- */
+/** The context for a specific execution of a command. */
 public data class CommandContext(
-    /**
-     * The command to execute.
-     */
+    /** The command to execute. */
     val command: CommandTree.Command,
-    /**
-     * The values of any wildcard arguments.
-     */
+    /** The values of any wildcard arguments. */
     val wildcardValues: List<String>,
 
-    /**
-     * Arguments provided after the command.
-     */
+    /** Arguments provided after the command. */
     val arguments: List<String>,
 ) {
-    /**
-     * Runs the command.
-     */
+    /** Runs the command. */
     public operator fun invoke(): String = command.handle(this)
 }
 
 /** A tree of AMCP commands. */
 public sealed interface CommandTree {
     public companion object {
-        /**
-         * The wildcard string used to match any command value.
-         */
+        /** The wildcard string used to match any command value. */
         public const val WILDCARD: String = "*"
     }
 
@@ -102,23 +90,22 @@ public inline fun CommandTree(builder: CommandTree.Builder.() -> Unit): CommandT
  * @return a pair of the command to execute, and the args to provide it, or null if no such command
  *   exists
  */
-public fun CommandTree.Branch.find(
-    splitCommand: List<String>
-): CommandContext? {
+public fun CommandTree.Branch.find(splitCommand: List<String>): CommandContext? {
     var i = 0
     var node: CommandTree? = this
     val wildcardValues = mutableListOf<String>()
     while (i < splitCommand.size) {
         val part = splitCommand[i++]
-        node = (node as? CommandTree.Branch)?.children?.let {
-            it[part] ?: (it[CommandTree.WILDCARD].also { wildcardValues += part })
-        }
+        node =
+            (node as? CommandTree.Branch)?.children?.let {
+                it[part] ?: (it[CommandTree.WILDCARD].also { wildcardValues += part })
+            }
         if (node is CommandTree.Command) break
     }
 
     return CommandContext(
         node as? CommandTree.Command ?: return null,
         wildcardValues,
-        splitCommand.drop(i)
+        splitCommand.drop(i),
     )
 }

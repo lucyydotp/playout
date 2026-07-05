@@ -55,18 +55,12 @@ class AmcpParserTests {
     inner class ChannelAndLayerParser {
         @Test
         fun `channel without layer is parsed properly`() {
-            assertEquals(
-                1 to 9999,
-                parseChannelAndLayer("1")
-            )
+            assertEquals(1 to 9999, parseChannelAndLayer("1"))
         }
 
         @Test
         fun `channel with layer is parsed properly`() {
-            assertEquals(
-                1 to 50,
-                parseChannelAndLayer("1-50")
-            )
+            assertEquals(1 to 50, parseChannelAndLayer("1-50"))
         }
 
         @Test

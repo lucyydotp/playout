@@ -39,7 +39,7 @@ class CommandTreeTests {
                     mapOf(
                         "foo" to CommandTree.Branch(mapOf("one" to one, "two" to two)),
                         "bar" to three,
-                    ),
+                    )
                 ),
                 tree,
             )
@@ -134,7 +134,6 @@ class CommandTreeTests {
             )
         }
 
-
         @Test
         fun `wildcard nodes match any value with other commands afterwards`() {
             val handler = CommandTree.Command { "foo" }
@@ -145,7 +144,6 @@ class CommandTreeTests {
                 tree.find(listOf("foo", "bar", "baz")),
             )
         }
-
 
         @Test
         fun `wildcard nodes accept arguments afterwards`() {
