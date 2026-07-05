@@ -39,7 +39,7 @@ class CommandTreeTests {
                     mapOf(
                         "foo" to CommandTree.Branch(mapOf("one" to one, "two" to two)),
                         "bar" to three,
-                    )
+                    ),
                 ),
                 tree,
             )
@@ -83,7 +83,10 @@ class CommandTreeTests {
             val handler = CommandTree.Command { "foo" }
             val tree = CommandTree { "foo"(handler) }
 
-            assertEquals(handler to emptyList(), tree.find(listOf("foo")))
+            assertEquals(
+                CommandContext(handler, emptyList(), emptyList()),
+                tree.find(listOf("foo")),
+            )
         }
 
         @Test
@@ -91,7 +94,10 @@ class CommandTreeTests {
             val handler = CommandTree.Command { "foo" }
             val tree = CommandTree { "foo"(handler) }
 
-            assertEquals(handler to listOf("bar", "baz"), tree.find(listOf("foo", "bar", "baz")))
+            assertEquals(
+                CommandContext(handler, emptyList(), listOf("bar", "baz")),
+                tree.find(listOf("foo", "bar", "baz")),
+            )
         }
 
         @Test
@@ -99,7 +105,10 @@ class CommandTreeTests {
             val handler = CommandTree.Command { "foo" }
             val tree = CommandTree { "foo bar"(handler) }
 
-            assertEquals(handler to listOf("baz"), tree.find(listOf("foo", "bar", "baz")))
+            assertEquals(
+                CommandContext(handler, emptyList(), listOf("baz")),
+                tree.find(listOf("foo", "bar", "baz")),
+            )
         }
 
         @Test
@@ -112,6 +121,61 @@ class CommandTreeTests {
         fun `returns null for partial deep commands`() {
             val tree = CommandTree { "foo bar baz" { "qux" } }
             assertEquals(null, tree.find(listOf("foo", "bar")))
+        }
+
+        @Test
+        fun `wildcard nodes match any value`() {
+            val handler = CommandTree.Command { "foo" }
+            val tree = CommandTree { "foo *"(handler) }
+
+            assertEquals(
+                CommandContext(handler, listOf("bar"), emptyList()),
+                tree.find(listOf("foo", "bar")),
+            )
+        }
+
+
+        @Test
+        fun `wildcard nodes match any value with other commands afterwards`() {
+            val handler = CommandTree.Command { "foo" }
+            val tree = CommandTree { "foo * baz"(handler) }
+
+            assertEquals(
+                CommandContext(handler, listOf("bar"), emptyList()),
+                tree.find(listOf("foo", "bar", "baz")),
+            )
+        }
+
+
+        @Test
+        fun `wildcard nodes accept arguments afterwards`() {
+            val handler = CommandTree.Command { "foo" }
+            val tree = CommandTree { "foo *"(handler) }
+
+            assertEquals(
+                CommandContext(handler, listOf("bar"), listOf("baz")),
+                tree.find(listOf("foo", "bar", "baz")),
+            )
+        }
+
+        @Test
+        fun `literal nodes take precedence over wildcards`() {
+            val one = CommandTree.Command { "one" }
+            val two = CommandTree.Command { "two" }
+
+            val tree = CommandTree {
+                "foo bar"(one)
+                "foo *"(two)
+            }
+
+            assertEquals(
+                CommandContext(one, emptyList(), emptyList()),
+                tree.find(listOf("foo", "bar")),
+            )
+            assertEquals(
+                CommandContext(two, listOf("baz"), emptyList()),
+                tree.find(listOf("foo", "baz")),
+            )
         }
     }
 }

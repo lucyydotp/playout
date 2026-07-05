@@ -1,8 +1,12 @@
 package me.lucyydotp.playout.controller.server.amcp
 
 /** Thrown when an AMCP command cannot be parsed. */
-public class AmcpCommandParseException(message: String, public val command: String) :
-    Exception(message)
+public class AmcpCommandParseException(
+    message: String,
+    public val command: String,
+    cause: Throwable? = null
+) :
+    Exception(message, cause)
 
 /** Splits an AMCP command into its constituent parts. */
 internal fun splitCommand(command: String) = buildList {
@@ -54,4 +58,27 @@ internal fun splitCommand(command: String) = buildList {
     }
     if (quoted) throw AmcpCommandParseException("Unterminated quoted phrase", command)
     finishLine()
+}
+
+
+private val channelRegex = Regex("""^(\d+)(?:-(\d+))?$""")
+private const val DEFAULT_LAYER = 9999
+
+/**
+ * Parses the channel and layer from an AMCP command.
+ * @throws AmcpCommandParseException if the channel command is invalid
+ */
+internal fun parseChannelAndLayer(string: String): Pair<Int, Int> {
+    val matcher = channelRegex.matchEntire(string) ?: throw AmcpCommandParseException(
+        "Invalid channel",
+        string,
+    )
+
+    return try {
+        matcher.groupValues[1].toInt() to (matcher.groupValues.getOrNull(2)
+            ?.takeIf { it.isNotBlank() }?.toInt()
+            ?: DEFAULT_LAYER)
+    } catch (e: NumberFormatException) {
+        throw AmcpCommandParseException("Invalid channel", string, e)
+    }
 }

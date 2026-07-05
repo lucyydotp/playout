@@ -1,7 +1,40 @@
 package me.lucyydotp.playout.controller.server.amcp
 
+import java.util.TreeMap
+
+/**
+ * The context for a specific execution of a command.
+ */
+public data class CommandContext(
+    /**
+     * The command to execute.
+     */
+    val command: CommandTree.Command,
+    /**
+     * The values of any wildcard arguments.
+     */
+    val wildcardValues: List<String>,
+
+    /**
+     * Arguments provided after the command.
+     */
+    val arguments: List<String>,
+) {
+    /**
+     * Runs the command.
+     */
+    public operator fun invoke(): String = command.handle(this)
+}
+
 /** A tree of AMCP commands. */
 public sealed interface CommandTree {
+    public companion object {
+        /**
+         * The wildcard string used to match any command value.
+         */
+        public const val WILDCARD: String = "*"
+    }
+
     /** A branch that contains subcommands. */
     public data class Branch(public val children: Map<String, CommandTree>) : CommandTree
 
@@ -10,16 +43,16 @@ public sealed interface CommandTree {
         /**
          * Runs the command.
          *
-         * @param args the arguments to the command. Does not include the command name.
+         * @param context the command context
          */
-        public fun handle(args: List<String>): String
+        public fun handle(context: CommandContext): String
     }
 
     public class Builder {
         private sealed interface Buildable
 
         private data class MutableBranch(
-            val children: MutableMap<String, Buildable> = mutableMapOf()
+            val children: MutableMap<String, Buildable> = TreeMap(String.CASE_INSENSITIVE_ORDER)
         ) : Buildable
 
         private data class MutableCommand(val handler: Command) : Buildable
@@ -44,7 +77,7 @@ public sealed interface CommandTree {
             }
         }
 
-        private fun build(branch: MutableBranch): CommandTree.Branch =
+        private fun build(branch: MutableBranch): Branch =
             Branch(
                 branch.children.mapValues { (_, v) ->
                     when (v) {
@@ -55,7 +88,7 @@ public sealed interface CommandTree {
             )
 
         /** Builds an immutable [CommandTree] from this builder. */
-        public fun build(): CommandTree.Branch = build(root)
+        public fun build(): Branch = build(root)
     }
 }
 
@@ -71,13 +104,21 @@ public inline fun CommandTree(builder: CommandTree.Builder.() -> Unit): CommandT
  */
 public fun CommandTree.Branch.find(
     splitCommand: List<String>
-): Pair<CommandTree.Command, List<String>>? {
+): CommandContext? {
     var i = 0
     var node: CommandTree? = this
+    val wildcardValues = mutableListOf<String>()
     while (i < splitCommand.size) {
-        node = (node as? CommandTree.Branch)?.children?.get(splitCommand[i++])
+        val part = splitCommand[i++]
+        node = (node as? CommandTree.Branch)?.children?.let {
+            it[part] ?: (it[CommandTree.WILDCARD].also { wildcardValues += part })
+        }
         if (node is CommandTree.Command) break
     }
 
-    return ((node as? CommandTree.Command) ?: return null) to splitCommand.drop(i)
+    return CommandContext(
+        node as? CommandTree.Command ?: return null,
+        wildcardValues,
+        splitCommand.drop(i)
+    )
 }

@@ -28,6 +28,8 @@ private fun <K, V> Map<K, V>.replace(key: K, valueMapper: (V) -> V): Map<K, V> {
 /** A single output. */
 public class Output(public val name: String, public val config: OutputConfig) {
 
+    private val logger = org.slf4j.LoggerFactory.getLogger("Output: $name")
+
     public val state: StateFlow<Map<Int, LayerState>>
         field = MutableStateFlow(emptyMap())
 
@@ -46,6 +48,7 @@ public class Output(public val name: String, public val config: OutputConfig) {
     ): LayerState {
         val layerState = LayerState(UUID.randomUUID(), false, content, templateData)
         state.update { state -> state + mapOf(layer to layerState) }
+        logger.info("Loading $content onto layer $layer")
         return layerState
     }
 
@@ -56,6 +59,7 @@ public class Output(public val name: String, public val config: OutputConfig) {
      */
     public fun play(layer: Int) {
         state.update { state -> state.replace(layer) { it.copy(isPlaying = true) } }
+        logger.info("Playing content on layer $layer")
     }
 
     /**
@@ -67,6 +71,7 @@ public class Output(public val name: String, public val config: OutputConfig) {
      */
     public fun update(layer: Int, templateData: JsonObject) {
         state.update { state -> state.replace(layer) { it.copy(templateData = templateData) } }
+        logger.info("Updating template data for layer $layer: $templateData")
     }
 
     /**
@@ -76,5 +81,6 @@ public class Output(public val name: String, public val config: OutputConfig) {
      */
     public fun stop(layer: Int) {
         state.update { state -> state.replace(layer) { it.copy(isPlaying = false) } }
+        logger.info("Stopping content on layer $layer")
     }
 }
