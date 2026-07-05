@@ -5,6 +5,8 @@ plugins {
 
 playout { enableTests() }
 
+application.mainClass = "me.lucyydotp.playout.controller.StandaloneKt"
+
 dependencies {
     implementation(projects.common)
 
