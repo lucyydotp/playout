@@ -28,9 +28,9 @@ class OutputTests {
 
         val state = output.state.value
 
-        assertEquals(state.size, 1)
-        assertEquals(state[1]?.content, content)
-        assertEquals(state[1]?.templateData, templateData)
+        assertEquals(1, state.size)
+        assertEquals(content, state[1]?.content)
+        assertEquals(templateData, state[1]?.templateData)
     }
 
     @Test
@@ -46,10 +46,10 @@ class OutputTests {
     fun `playing sets playing to true`() {
         val output = newOutput()
         output.load(1, ContentReference.SolidColor(0u))
-        assertEquals(output.state.value[1]?.isPlaying, false)
+        assertEquals(false, output.state.value[1]?.isPlaying)
 
         output.play(1)
-        assertEquals(output.state.value[1]?.isPlaying, true)
+        assertEquals(true, output.state.value[1]?.isPlaying)
     }
 
     @Test
@@ -82,7 +82,7 @@ class OutputTests {
         val secondState = output.state.value[1]!!
 
         assertEquals(firstState.id, secondState.id)
-        assertEquals(secondState.templateData, data)
+        assertEquals(data, secondState.templateData)
     }
 
     // -- Stop --
@@ -90,13 +90,13 @@ class OutputTests {
     fun `stopping sets playing to false`() {
         val output = newOutput()
         output.load(1, ContentReference.SolidColor(0u))
-        assertEquals(output.state.value[1]?.isPlaying, false)
+        assertEquals(false, output.state.value[1]?.isPlaying)
 
         output.play(1)
-        assertEquals(output.state.value[1]?.isPlaying, true)
+        assertEquals(true, output.state.value[1]?.isPlaying)
 
         output.stop(1)
-        assertEquals(output.state.value[1]?.isPlaying, false)
+        assertEquals(false, output.state.value[1]?.isPlaying)
     }
 
     @Test

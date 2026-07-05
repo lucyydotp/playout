@@ -16,9 +16,12 @@ open class PlayoutExtension {
 
         val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
+        fun lib(name: String) = libs.findLibrary(name).orElseThrow()
+
         dependencies {
             "testImplementation"(kotlin("test"))
-            "testImplementation"(libs.findLibrary("kotlinx-coroutines-test").orElseThrow())
+            "testImplementation"(lib("kotlinx-coroutines-test"))
+            "testImplementation"(lib("mockk"))
         }
     }
 }

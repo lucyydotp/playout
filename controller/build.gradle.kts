@@ -14,4 +14,5 @@ dependencies {
     // FIXME: if we want graal then we need CIO, but that means losing HTTP/2.
     //  Is that really an issue given everything is localhost anyway?
     ktor("server-netty")
+    ktor("network")
 }
