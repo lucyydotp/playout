@@ -22,6 +22,7 @@ open class PlayoutExtension {
             "testImplementation"(kotlin("test"))
             "testImplementation"(lib("kotlinx-coroutines-test"))
             "testImplementation"(lib("mockk"))
+            "testRuntimeOnly"(lib("logback"))
         }
     }
 }

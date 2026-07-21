@@ -9,6 +9,7 @@ application.mainClass = "me.lucyydotp.playout.controller.StandaloneKt"
 
 dependencies {
     implementation(projects.common)
+    runtimeOnly(libs.logback)
 
     fun ktor(module: String) = implementation("io.ktor:ktor-$module")
     ktor("server-core")

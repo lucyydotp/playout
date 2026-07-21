@@ -45,7 +45,7 @@ class AmcpSocketTests {
         fun `CG ADD loads content without playing when play-on-load is 0`() {
             val (manager, output) = mockOutputs(true)
 
-            val response = AmcpSocket(manager).handle("CG 1-10 ADD 0 template-name 0")
+            val response = AmcpSocket(manager).handle("CG 1-10 ADD 0 solid-color:#ffffff 0")
             assertEquals("202 OK\r\n", response)
 
             val state = output.state.value[10]
@@ -58,7 +58,7 @@ class AmcpSocketTests {
         fun `CG ADD loads content and plays when play-on-load is 1`() {
             val (manager, output) = mockOutputs(true)
 
-            val response = AmcpSocket(manager).handle("CG 1-10 ADD 0 template-name 1")
+            val response = AmcpSocket(manager).handle("CG 1-10 ADD 0 solid-color:#ffffff 1")
             assertEquals("202 OK\r\n", response)
 
             val state = output.state.value[10]
@@ -72,7 +72,8 @@ class AmcpSocketTests {
             val (manager, output) = mockOutputs(true)
 
             val response =
-                AmcpSocket(manager).handle("""CG 1-10 ADD 0 template-name 0 "{\"foo\": \"bar\"}"""")
+                AmcpSocket(manager)
+                    .handle("""CG 1-10 ADD 0 solid-color:#ffffff 0 "{\"foo\": \"bar\"}"""")
             assertEquals("202 OK\r\n", response)
 
             val state = output.state.value[10]

@@ -39,8 +39,11 @@ public class AmcpSocket(public val outputManager: OutputManager) {
                     Json.parseToJsonElement(json) as JsonObject
                 }
 
-            // TODO: parse content ref properly
-            channel.load(layer, ContentReference.OGraf(template), data ?: JsonObject(emptyMap()))
+            channel.load(
+                layer,
+                ContentReference.fromString(template),
+                data ?: JsonObject(emptyMap()),
+            )
             if (playOnLoad == "1") channel.play(layer)
             OK
         }
