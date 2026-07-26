@@ -9,6 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/actions/setup-gradle@v6
+      - run: ./gradlew bunInstall
       - run: ./gradlew build
       - uses: mikepenz/action-junit-report@v6
         if: success() || failure() # always run even if the previous step fails

@@ -51,7 +51,7 @@ class OGrafLayer extends LitElement {
 				renderType: "realtime",
 				renderCharacteristics: {},
 			})
-            // TODO: for testing only, remove this
+			// TODO: for testing only, remove this
 			setTimeout(() => this.element?.playAction?.({}), 100)
 		})
 	}
