@@ -1,14 +1,18 @@
 [versions]
 kotlin = "2.4.0"
 kotlinx-coroutines = "1.11.0"
+kotlinx-serialization = "1.11.0"
 ktfmt = "0.26.0"
 ktor = "3.5.0"
-mockk = "1.14.11"
 logback = "1.5.38"
+mockk = "1.14.11"
+bun-gradle = "0.1.0"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serialization-hocon", version.ref = "kotlinx-serialization" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
@@ -17,3 +21,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+bun = { id = "io.clroot.gradle-bun", version.ref = "bun-gradle" }

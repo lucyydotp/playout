@@ -4,3 +4,4 @@ build/
 .kotlin/
 *.iml
 run/
+node_modules/

@@ -17,8 +17,8 @@ public data class OGrafManifest(
     public val supportsNonRealTime: Boolean,
     @SerialName($$"$schema") private val schema: String? = null,
 ) {
-    private companion object {
-        private const val EXPECTED_SCHEMA =
+    public companion object {
+        public const val EXPECTED_SCHEMA: String =
             "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json"
     }
 

@@ -8,5 +8,6 @@ rootProject.name = "playout"
 
 include(
     "common",
-    "controller"
+    "controller",
+    "frontend",
 )
