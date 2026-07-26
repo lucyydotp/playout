@@ -1,10 +1,8 @@
-import { consume } from "@lit/context"
-import { LitElement, nothing } from "lit"
-import { customElement, state } from "lit/decorators.js"
+import { customElement } from "lit/decorators.js"
 import type { Graphic } from "ograf/dist/apis/graphicsAPI"
-import type { OutputState } from "../data"
-import { socketContext } from "../socketProvider"
 import { loadOGrafGraphic } from "./loader"
+import { promiseWithResolvers } from "../../util/promise"
+import { doubleRAF } from "../../util/raf"
 
 type GraphicElement = Graphic & HTMLElement
 
@@ -12,7 +10,7 @@ type GraphicElement = Graphic & HTMLElement
  * Renders an OGraf graphic as a layer.
  */
 @customElement("playout-layer-ograf")
-class OGrafLayer extends LitElement {
+class OGrafLayer extends HTMLElement {
 	/** The layer's ID. */
 	layerId!: string
 	/** The OGraf graphic's ID. */
@@ -29,39 +27,50 @@ class OGrafLayer extends LitElement {
 		this.element?.updateAction({ data: value })
 	}
 
-	// OGraf elements have their own shadow DOM, no need to create a second one
-	override readonly renderRoot = this
+	/** Whether the layer is currently playing. */
+	#isPlaying: boolean = false
 
-	@consume({ context: socketContext })
-	private state: OutputState | undefined
+	get isPlaying() {
+		return this.#isPlaying ?? false
+	}
 
-	@state()
-	private element?: GraphicElement
-	private queue: Promise<void> = Promise.resolve()
-
-	override connectedCallback() {
-		super.connectedCallback()
+	set isPlaying(value) {
 		this.queue = this.queue.then(async () => {
-			console.log("connecting ograf layer", this.layerId, this.graphicId)
-			const elementId = await loadOGrafGraphic(this.graphicId)
-			this.element = document.createElement(elementId) as GraphicElement
+			if (this.#isPlaying === value) return
+			this.#isPlaying = value
 
-			await this.element.load({
-				data: this.templateData,
-				renderType: "realtime",
-				renderCharacteristics: {},
-			})
-			// TODO: for testing only, remove this
-			setTimeout(() => this.element?.playAction?.({}), 100)
+			if (value) {
+				await this.element?.playAction({})
+			} else {
+				await this.element?.stopAction({})
+			}
 		})
 	}
 
-	override disconnectedCallback() {
-		super.disconnectedCallback()
-		this.element?.remove()
+	private element: GraphicElement | undefined
+	private setupPromise = promiseWithResolvers()
+	private queue: Promise<void> = this.setupPromise.promise
+
+	async connectedCallback() {
+		const elementId = await loadOGrafGraphic(this.graphicId)
+		this.element = document.createElement(elementId) as GraphicElement
+		this.appendChild(this.element)
+
+		await this.element.load({
+			data: this.templateData,
+			renderType: "realtime",
+			renderCharacteristics: {},
+		})
+
+		// FIXME: something weird is going on here timing-wise,
+		//  possibly an interaction between this element and the graphic itself?
+		await doubleRAF()
+		await doubleRAF()
+		this.setupPromise.resolve()
 	}
 
-	override render() {
-		return this.element ?? nothing
+	disconnectedCallback() {
+		this.element?.remove()
+		this.element = undefined
 	}
 }

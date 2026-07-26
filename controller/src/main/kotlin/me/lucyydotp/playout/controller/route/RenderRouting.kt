@@ -17,12 +17,13 @@ import me.lucyydotp.playout.config.OutputConfig
 import me.lucyydotp.playout.content.ContentReference
 import me.lucyydotp.playout.controller.output.OutputManager
 import me.lucyydotp.playout.state.LayerState
+import me.lucyydotp.playout.util.EMPTY
 
 @Serializable
 private data class LoadPayload(
     val layer: Int,
     val content: ContentReference,
-    val templateData: JsonObject? = null,
+    val templateData: JsonObject = JsonObject.EMPTY,
 )
 
 @Serializable
@@ -38,7 +39,7 @@ public fun Route.outputRoutes(outputManager: OutputManager) {
             outputManager[call.parameters["output"]!!]
                 ?: return@post call.respond(HttpStatusCode.NotFound, "Unknown output")
 
-        output.load(payload.layer, payload.content, payload.templateData ?: JsonObject(emptyMap()))
+        output.load(payload.layer, payload.content, payload.templateData)
         call.respond(HttpStatusCode.OK)
     }
 

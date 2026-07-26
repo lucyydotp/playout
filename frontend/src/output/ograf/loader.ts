@@ -22,6 +22,7 @@ async function loadOGraf(id: string): Promise<string> {
 	console.log(`Loading OGraf ${json.name} (${json.id})`)
 
 	const { default: graphic } = await import(
+		/* @vite-ignore */
 		`/api/content/ograf/${id}/${json.main}`
 	)
 	if (graphic == null)

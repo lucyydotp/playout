@@ -3,9 +3,9 @@ package me.lucyydotp.playout.controller.server.amcp
 import java.util.TreeMap
 
 /** The context for a specific execution of a command. */
-public data class CommandContext(
+public data class CommandContext<T>(
     /** The command to execute. */
-    val command: CommandTree.Command,
+    val command: CommandTree.Command<T>,
     /** The values of any wildcard arguments. */
     val wildcardValues: List<String>,
 
@@ -13,42 +13,42 @@ public data class CommandContext(
     val arguments: List<String>,
 ) {
     /** Runs the command. */
-    public operator fun invoke(): String = command.handle(this)
+    public operator fun invoke(): T = command.handle(this)
 }
 
 /** A tree of AMCP commands. */
-public sealed interface CommandTree {
+public sealed interface CommandTree<T> {
     public companion object {
         /** The wildcard string used to match any command value. */
         public const val WILDCARD: String = "*"
     }
 
     /** A branch that contains subcommands. */
-    public data class Branch(public val children: Map<String, CommandTree>) : CommandTree
+    public data class Branch<T>(public val children: Map<String, CommandTree<T>>) : CommandTree<T>
 
     /** An executable subcommand. */
-    public fun interface Command : CommandTree {
+    public fun interface Command<T> : CommandTree<T> {
         /**
          * Runs the command.
          *
          * @param context the command context
          */
-        public fun handle(context: CommandContext): String
+        public fun handle(context: CommandContext<T>): T
     }
 
-    public class Builder {
+    public class Builder<T> {
         private sealed interface Buildable
 
         private data class MutableBranch(
             val children: MutableMap<String, Buildable> = TreeMap(String.CASE_INSENSITIVE_ORDER)
         ) : Buildable
 
-        private data class MutableCommand(val handler: Command) : Buildable
+        private inner class MutableCommand(val handler: Command<T>) : Buildable
 
         private val root = MutableBranch()
 
         /** Registers a new command. */
-        public operator fun String.invoke(handler: Command) {
+        public operator fun String.invoke(handler: Command<T>) {
             val leafNode =
                 split(" ").dropLast(1).fold(root) { node, arg ->
                     node.children.getOrPut(arg, ::MutableBranch) as? MutableBranch
@@ -65,24 +65,25 @@ public sealed interface CommandTree {
             }
         }
 
-        private fun build(branch: MutableBranch): Branch =
+        private fun build(branch: MutableBranch): Branch<T> =
             Branch(
                 branch.children.mapValues { (_, v) ->
                     when (v) {
-                        is MutableCommand -> v.handler
+                        is Builder<T>.MutableCommand -> v.handler
                         is MutableBranch -> build(v)
                     }
                 }
             )
 
         /** Builds an immutable [CommandTree] from this builder. */
-        public fun build(): Branch = build(root)
+        public fun build(): Branch<T> = build(root)
     }
 }
 
 /** Builds a [CommandTree] using the provided [builder]. */
-public inline fun CommandTree(builder: CommandTree.Builder.() -> Unit): CommandTree.Branch =
-    CommandTree.Builder().apply(builder).build()
+public inline fun <T> CommandTree(
+    builder: CommandTree.Builder<T>.() -> Unit
+): CommandTree.Branch<T> = CommandTree.Builder<T>().apply(builder).build()
 
 /**
  * Finds a command node for a command.
@@ -90,21 +91,21 @@ public inline fun CommandTree(builder: CommandTree.Builder.() -> Unit): CommandT
  * @return a pair of the command to execute, and the args to provide it, or null if no such command
  *   exists
  */
-public fun CommandTree.Branch.find(splitCommand: List<String>): CommandContext? {
+public fun <T> CommandTree.Branch<T>.find(splitCommand: List<String>): CommandContext<T>? {
     var i = 0
-    var node: CommandTree? = this
+    var node: CommandTree<T>? = this
     val wildcardValues = mutableListOf<String>()
     while (i < splitCommand.size) {
         val part = splitCommand[i++]
         node =
-            (node as? CommandTree.Branch)?.children?.let {
+            (node as? CommandTree.Branch<T>)?.children?.let {
                 it[part] ?: (it[CommandTree.WILDCARD].also { wildcardValues += part })
             }
-        if (node is CommandTree.Command) break
+        if (node is CommandTree.Command<T>) break
     }
 
     return CommandContext(
-        node as? CommandTree.Command ?: return null,
+        node as? CommandTree.Command<T> ?: return null,
         wildcardValues,
         splitCommand.drop(i),
     )

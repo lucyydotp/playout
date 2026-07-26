@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import me.lucyydotp.playout.content.ContentReference
 import me.lucyydotp.playout.serialization.SerializableUUID
+import me.lucyydotp.playout.util.EMPTY
 
 /** The state of an output layer. */
 @Serializable
@@ -23,5 +24,5 @@ public data class LayerState(
     public val content: ContentReference,
 
     /** The template data associated with the layer. */
-    public val templateData: JsonObject = JsonObject(emptyMap()),
+    public val templateData: JsonObject = JsonObject.EMPTY,
 )

@@ -17,6 +17,7 @@ internal fun splitCommand(command: String) = buildList {
     fun finishLine() {
         backslash = false
         quoted = false
+        wasQuoted = false
         if (current.isNotBlank()) {
             add(current.toString())
             current = StringBuilder()

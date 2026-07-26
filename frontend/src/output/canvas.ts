@@ -50,12 +50,12 @@ export class Canvas extends LitElement {
 										const [type, info] = layer.content.split(":")
 										switch (type) {
 											case "ograf":
-												console.log("rendering ograf", info)
 												return html`
                                         <playout-layer-ograf 
                                                 .layerId=${layer.id}
                                                 .graphicId=${info}
                                                 .templateData=${layer.templateData}
+                                                .isPlaying=${layer.isPlaying}
                                         ></playout-layer-ograf>`
 										}
 									},

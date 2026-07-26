@@ -27,6 +27,11 @@ class AmcpParserTests {
     }
 
     @Test
+    fun `unquoted phrases following quoted phrases parse`() {
+        assertEquals(listOf("foo", "bar", "baz"), splitCommand("""foo "bar" baz"""))
+    }
+
+    @Test
     fun `missing end quote throws`() {
         assertThrows<AmcpCommandParseException> { splitCommand("""foo "bar""") }
     }

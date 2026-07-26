@@ -18,6 +18,8 @@ public sealed class ContentReference {
     /** Encodes the reference to a string, not including the type prefix. */
     protected abstract fun encode(): String
 
+    final override fun toString(): String = "$type:${encode()}"
+
     /**
      * A solid colour.
      *
@@ -68,7 +70,7 @@ public sealed class ContentReference {
             PrimitiveSerialDescriptor(ContentReference::class.qualifiedName!!, PrimitiveKind.STRING)
 
         override fun serialize(encoder: Encoder, value: ContentReference) {
-            encoder.encodeString("${value.type}:${value.encode()}")
+            encoder.encodeString(value.toString())
         }
 
         override fun deserialize(decoder: Decoder): ContentReference =
