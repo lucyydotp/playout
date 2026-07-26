@@ -1,8 +1,8 @@
 import { customElement } from "lit/decorators.js"
 import type { Graphic } from "ograf/dist/apis/graphicsAPI"
-import { loadOGrafGraphic } from "./loader"
 import { promiseWithResolvers } from "../../util/promise"
 import { doubleRAF } from "../../util/raf"
+import { loadOGrafGraphic } from "./loader"
 
 type GraphicElement = Graphic & HTMLElement
 
