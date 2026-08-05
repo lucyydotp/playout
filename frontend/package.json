@@ -5,7 +5,7 @@
 		"build": "vite build",
 		"dev": "vite",
         "check": "biome check",
-        "format": "biome format --write"
+        "format": "biome check --write"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.5.5",

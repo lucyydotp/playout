@@ -1,9 +1,11 @@
 package me.lucyydotp.playout.controller
 
 import com.typesafe.config.ConfigFactory
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
+import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
@@ -44,7 +46,10 @@ private fun Application.module() {
             get("/healthz") { call.respondText("OK") }
             route("/content") { contentRoutes(content) }
             route("/output") { outputRoutes(outputManager) }
+            route("{...}") { handle { call.respond(HttpStatusCode.NotFound) } }
         }
+
+        staticResources("/", "frontend") { default("index.html") }
     }
 }
 

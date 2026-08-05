@@ -6,6 +6,7 @@ export default defineConfig({
 		rolldownOptions: {
 			output: {
 				dir: "build/dist",
+                cleanDir: true,
 			},
 		},
 	},

@@ -31,3 +31,12 @@ tasks.register<BunTask>("biomeFormat") {
     inputs.dir("src")
     args("run", "format")
 }
+
+configurations.create("webBundle") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+}
+
+artifacts {
+    add("webBundle", tasks.named("build"))
+}

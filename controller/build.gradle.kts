@@ -7,6 +7,8 @@ playout { enableTests() }
 
 application.mainClass = "me.lucyydotp.playout.controller.StandaloneKt"
 
+val frontend = configurations.create("frontend")
+
 dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:3.5.0")
     runtimeOnly(libs.logback)
@@ -24,4 +26,11 @@ dependencies {
     ktor("server-websockets")
     ktor("serialization-kotlinx-json")
     ktor("network")
+
+    frontend(project(":frontend", configuration = "webBundle"))
+}
+
+tasks {
+    processResources { from(frontend) { into("frontend") } }
+    withType<JavaExec> { workingDir = file("run") }
 }
