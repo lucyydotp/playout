@@ -61,7 +61,7 @@ class AmcpCommandDispatcherTests {
 
             val state = output.state.value[10]
             assertNotNull(state)
-            assertEquals(state.isPlaying, false)
+            assertEquals(state.currentStep, -1)
             assertEquals(state.templateData, JsonObject(emptyMap()))
         }
 
@@ -83,7 +83,7 @@ class AmcpCommandDispatcherTests {
 
             val state = output.state.value[10]
             assertNotNull(state)
-            assertEquals(state.isPlaying, true)
+            assertEquals(state.currentStep, 0)
             assertEquals(state.templateData, JsonObject(emptyMap()))
         }
 

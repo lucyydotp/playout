@@ -55,7 +55,7 @@ export class Canvas extends LitElement {
                                                 .layerId=${layer.id}
                                                 .graphicId=${info}
                                                 .templateData=${layer.templateData}
-                                                .isPlaying=${layer.isPlaying}
+                                                .currentStep=${layer.currentStep}
                                         ></playout-layer-ograf>`
 										}
 									},

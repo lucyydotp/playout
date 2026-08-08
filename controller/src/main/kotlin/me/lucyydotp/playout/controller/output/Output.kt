@@ -46,7 +46,7 @@ public class Output(public val name: String, public val config: OutputConfig) {
         content: ContentReference,
         templateData: JsonObject = JsonObject(emptyMap()),
     ): LayerState {
-        val layerState = LayerState(UUID.randomUUID(), false, content, templateData)
+        val layerState = LayerState(UUID.randomUUID(), -1, content, templateData)
         state.update { state -> state + mapOf(layer to layerState) }
         logger.info("Loading $content onto layer $layer")
         return layerState
@@ -58,7 +58,7 @@ public class Output(public val name: String, public val config: OutputConfig) {
      * @throws NoSuchElementException if the layer has no loaded content to play
      */
     public fun play(layer: Int) {
-        state.update { state -> state.replace(layer) { it.copy(isPlaying = true) } }
+        state.update { state -> state.replace(layer) { it.copy(currentStep = 0) } }
         logger.info("Playing content on layer $layer")
     }
 
@@ -80,7 +80,7 @@ public class Output(public val name: String, public val config: OutputConfig) {
      * @throws NoSuchElementException if the layer has no content currently playing
      */
     public fun stop(layer: Int) {
-        state.update { state -> state.replace(layer) { it.copy(isPlaying = false) } }
+        state.update { state -> state.replace(layer) { it.copy(currentStep = -1) } }
         logger.info("Stopping content on layer $layer")
     }
 }

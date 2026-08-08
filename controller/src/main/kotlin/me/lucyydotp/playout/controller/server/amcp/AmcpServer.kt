@@ -48,7 +48,7 @@ private suspend fun handleSocket(socket: Socket, commandDispatcher: AmcpCommandD
                 } catch (e: AmcpCommandParseException) {
                     logger.error("Failed to parse command $line", e)
                     write.writeStringUtf8("400 ERROR\r\n")
-                    return
+                    continue
                 }
 
             val response = commandDispatcher.dispatch(parsed.command)

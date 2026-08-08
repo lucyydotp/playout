@@ -27,22 +27,24 @@ class OGrafLayer extends HTMLElement {
 		this.element?.updateAction({ data: value })
 	}
 
-	/** Whether the layer is currently playing. */
-	#isPlaying: boolean = false
+	/** The layer's current step. */
+	#currentStep: number = -1
 
-	get isPlaying() {
-		return this.#isPlaying ?? false
+	get currentStep() {
+		return this.#currentStep
 	}
 
-	set isPlaying(value) {
+	set currentStep(value) {
 		this.queue = this.queue.then(async () => {
-			if (this.#isPlaying === value) return
-			this.#isPlaying = value
+			if (this.#currentStep === value) return
+			this.#currentStep = value
 
-			if (value) {
-				await this.element?.playAction({})
-			} else {
+			if (this.#currentStep < 0) {
 				await this.element?.stopAction({})
+			} else {
+				await this.element?.playAction({
+					goto: value,
+				})
 			}
 		})
 	}

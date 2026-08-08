@@ -17,8 +17,14 @@ public data class LayerState(
      */
     public val id: SerializableUUID,
 
-    /** Whether the content is currently being played. */
-    public val isPlaying: Boolean,
+    /**
+     * The content's current step.
+     *
+     * The first step is step 0 - graphics must support step 0 but may support any amount of
+     * subsequent steps. The graphic is considered stopped if the step is negative, or if the step
+     * is higher than the graphic supports.
+     */
+    public val currentStep: Int,
 
     /** The content being played. */
     public val content: ContentReference,

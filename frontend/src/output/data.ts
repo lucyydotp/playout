@@ -7,7 +7,7 @@ export interface OutputState {
 
 export interface LayerState {
 	id: string
-	isPlaying: boolean
+	currentStep: number
 	content: string
 	templateData: object
 }

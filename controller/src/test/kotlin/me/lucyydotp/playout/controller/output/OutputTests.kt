@@ -43,13 +43,13 @@ class OutputTests {
 
     // -- Play --
     @Test
-    fun `playing sets playing to true`() {
+    fun `playing sets the current step to zero`() {
         val output = newOutput()
         output.load(1, ContentReference.SolidColor(0u))
-        assertEquals(false, output.state.value[1]?.isPlaying)
+        assertEquals(-1, output.state.value[1]?.currentStep)
 
         output.play(1)
-        assertEquals(true, output.state.value[1]?.isPlaying)
+        assertEquals(0, output.state.value[1]?.currentStep)
     }
 
     @Test
@@ -87,23 +87,23 @@ class OutputTests {
 
     // -- Stop --
     @Test
-    fun `stopping sets playing to false`() {
+    fun `stopping sets the current step to -1`() {
         val output = newOutput()
         output.load(1, ContentReference.SolidColor(0u))
-        assertEquals(false, output.state.value[1]?.isPlaying)
+        assertEquals(-1, output.state.value[1]?.currentStep)
 
         output.play(1)
-        assertEquals(true, output.state.value[1]?.isPlaying)
+        assertEquals(0, output.state.value[1]?.currentStep)
 
         output.stop(1)
-        assertEquals(false, output.state.value[1]?.isPlaying)
+        assertEquals(-1, output.state.value[1]?.currentStep)
     }
 
     @Test
     fun `stopping an already stopped layer does nothing`() {
         val output = newOutput()
         val state = output.load(1, ContentReference.SolidColor(0u))
-        assertEquals(state.isPlaying, false)
+        assertEquals(-1, state.currentStep)
 
         output.stop(1)
         assertSame(state, output.state.value[1])
