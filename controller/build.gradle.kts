@@ -9,6 +9,8 @@ playout { enableTests() }
 
 application.mainClass = "me.lucyydotp.playout.controller.StandaloneKt"
 
+ktor.docker.jreVersion = JavaVersion.VERSION_25
+
 if (System.getenv("GITHUB_ACTIONS") == "true") {
     val parsedTag =
         Regex("v(\\d+)\\.(\\d+)\\.(\\d+)").find(System.getenv("GITHUB_REF_NAME"))?.groupValues
