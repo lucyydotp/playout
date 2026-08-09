@@ -1,3 +1,5 @@
+import io.ktor.plugin.features.DockerImageRegistry
+
 plugins {
     id("playout.common")
     alias(libs.plugins.ktor)
@@ -6,6 +8,37 @@ plugins {
 playout { enableTests() }
 
 application.mainClass = "me.lucyydotp.playout.controller.StandaloneKt"
+
+if (System.getenv("GITHUB_ACTIONS") == "true") {
+    val parsedTag =
+        Regex("v(\\d+)\\.(\\d+)\\.(\\d+)").find(System.getenv("GITHUB_REF_NAME"))?.groupValues
+
+    val tags =
+        if (parsedTag != null) {
+            setOf(
+                parsedTag[1],
+                "${parsedTag[1]}.${parsedTag[2]}",
+                "${parsedTag[1]}.${parsedTag[2]}.${parsedTag[3]}",
+            )
+        } else {
+            setOf(System.getenv("GITHUB_REF_NAME"))
+        }
+
+    ktor.docker {
+        externalRegistry =
+            DockerImageRegistry.externalRegistry(
+                providers.environmentVariable("GITHUB_ACTOR"),
+                providers.environmentVariable("GITHUB_TOKEN"),
+                hostname = provider { "ghcr.io" },
+                project = provider { "playout" },
+                namespace = provider { "lucyydotp" },
+            )
+        imageTag = System.getenv("GITHUB_SHA").take(8)
+    }
+
+    // Ktor can't handle multiple tags, so add them ourselves
+    jib.to.tags.addAll(tags)
+}
 
 val frontend = configurations.create("frontend")
 

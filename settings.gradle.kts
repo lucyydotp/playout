@@ -7,6 +7,7 @@ plugins {
 rootProject.name = "playout"
 
 include(
+    "desktop",
     "common",
     "controller",
     "frontend",
