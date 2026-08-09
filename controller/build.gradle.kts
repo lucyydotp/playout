@@ -58,6 +58,7 @@ dependencies {
     //  Is that really an issue given everything is localhost anyway?
     ktor("server-netty")
     ktor("server-content-negotiation")
+    ktor("server-call-logging")
     ktor("server-websockets")
     ktor("serialization-kotlinx-json")
     ktor("network")

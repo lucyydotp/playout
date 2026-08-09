@@ -12,6 +12,9 @@ export const ROUTES: RouteConfig[] = [
 	{
 		path: "/render/:channel",
 		render: ({ channel }) =>
-			html`<playout-socket channel=${channel}></playout-socket>`,
+			html`
+                <playout-socket channel=${channel}>
+                    <playout-canvas></playout-canvas>
+                </playout-socket>`,
 	},
 ]

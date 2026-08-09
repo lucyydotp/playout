@@ -7,6 +7,7 @@ import "./styles.css"
 import "./output/socketProvider"
 import "./output/canvas"
 import "./output/debug"
+import "./output/multiview"
 
 import { ROUTES } from "./routes"
 

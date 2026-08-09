@@ -6,6 +6,7 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import me.lucyydotp.playout.config.PlayoutConfig
+import me.lucyydotp.playout.controller.env.EnvironmentVariables
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -30,6 +31,15 @@ public fun PlayoutConfig.asCasparCompatibleXml(): String {
             "channels" {
                 outputs.forEach { (_, config) ->
                     "channel" { "video-mode" { textContent = "${config.resolution.height}p6000" } }
+                }
+            }
+
+            if (EnvironmentVariables.amcpScannerPort != null) {
+                "amcp" {
+                    "media-server" {
+                        "host" { textContent = EnvironmentVariables.amcpScannerAdvertisedHost }
+                        "port" { textContent = EnvironmentVariables.amcpScannerPort?.toString() }
+                    }
                 }
             }
         }
