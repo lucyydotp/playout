@@ -37,7 +37,7 @@ if (System.getenv("GITHUB_ACTIONS") == "true") {
     }
 
     // Ktor can't handle multiple tags, so add them ourselves
-    jib.to.tags.addAll(tags)
+    jib.to.tags = jib.to.tags + tags
 }
 
 val frontend = configurations.create("frontend")
