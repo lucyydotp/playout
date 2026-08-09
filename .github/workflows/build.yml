@@ -6,11 +6,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew bunInstall
       - run: ./gradlew build publishImage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: mikepenz/action-junit-report@v6
         if: success() || failure() # always run even if the previous step fails
         with:
