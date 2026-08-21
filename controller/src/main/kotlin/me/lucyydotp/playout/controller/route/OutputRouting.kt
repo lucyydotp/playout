@@ -56,6 +56,19 @@ public fun Route.outputRoutes(outputManager: OutputManager) {
         call.respond(HttpStatusCode.OK)
     }
 
+    post("/{output}/stop/{layer}") {
+        val output =
+            outputManager[call.parameters["output"]!!]
+                ?: return@post call.respond(HttpStatusCode.NotFound, "Unknown output")
+
+        val layer =
+            call.parameters["layer"]?.toIntOrNull()
+                ?: return@post call.respond(HttpStatusCode.BadRequest, "Layer must be an integer")
+
+        output.stop(layer)
+        call.respond(HttpStatusCode.OK)
+    }
+
     webSocket("/{output}/watch") {
         val output = outputManager[call.parameters["output"]!!]
         if (output == null) {
