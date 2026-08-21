@@ -15,7 +15,7 @@ public fun Route.contentRoutes(content: ScannedContent) {
 
             staticZip(
                 remotePath = id,
-                basePath = graphic.manifestPath.parent.toString(),
+                basePath = graphic.manifestPath.parent?.toString(),
                 zip = graphic.archivePath,
                 index = null,
             )
