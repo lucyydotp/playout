@@ -43,7 +43,7 @@ private fun Application.module() {
         ?.let { launch(Dispatchers.IO) { runAmcpServer(outputManager, content, config) } }
 
     routing {
-        port(EnvironmentVariables.standalonePort.toInt()) {
+        localPort(EnvironmentVariables.standalonePort.toInt()) {
             route("/api") {
                 get("/healthz") { call.respondText("OK") }
                 route("/content") { contentRoutes(content) }
@@ -56,7 +56,7 @@ private fun Application.module() {
 
         EnvironmentVariables.amcpScannerPort?.let {
             log.info("Starting CasparCG scanner API on port $it")
-            port(it.toInt()) { casparScannerRoutes(content) }
+            localPort(it.toInt()) { casparScannerRoutes(content) }
         }
     }
 }
