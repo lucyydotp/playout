@@ -24,6 +24,7 @@ private data class LoadPayload(
     val layer: Int,
     val content: ContentReference,
     val templateData: JsonObject = JsonObject.EMPTY,
+    val play: Boolean = false,
 )
 
 @Serializable
@@ -40,6 +41,10 @@ public fun Route.outputRoutes(outputManager: OutputManager) {
                 ?: return@post call.respond(HttpStatusCode.NotFound, "Unknown output")
 
         output.load(payload.layer, payload.content, payload.templateData)
+        if (payload.play) {
+            output.play(payload.layer)
+        }
+
         call.respond(HttpStatusCode.OK)
     }
 
