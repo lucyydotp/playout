@@ -22,7 +22,7 @@ export class OutputSocketProvider extends LitElement {
 	private connect() {
 		if (this.socket?.readyState === WebSocket.OPEN) return
 		this.socket = new WebSocket(
-			`ws://${window.location.host}/api/output/${this.channel}/watch`,
+			`${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/api/output/${this.channel}/watch`,
 		)
 		this.socket.onopen = () => {}
 		this.socket.onmessage = (event) => {
