@@ -48,6 +48,17 @@ public fun Route.outputRoutes(outputManager: OutputManager) {
         call.respond(HttpStatusCode.OK)
     }
 
+    post("/{output}/loadOrUpdate") {
+        val payload = call.receive<LoadPayload>()
+
+        val output =
+            outputManager[call.parameters["output"]!!]
+                ?: return@post call.respond(HttpStatusCode.NotFound, "Unknown output")
+
+        output.updateOrLoadAndPlay(payload.layer, payload.content, payload.templateData)
+        call.respond(HttpStatusCode.OK)
+    }
+
     post("/{output}/play/{layer}") {
         val output =
             outputManager[call.parameters["output"]!!]

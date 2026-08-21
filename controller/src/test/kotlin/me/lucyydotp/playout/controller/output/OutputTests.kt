@@ -108,4 +108,45 @@ class OutputTests {
         output.stop(1)
         assertSame(state, output.state.value[1])
     }
+
+    // -- Update and load of play
+    @Test
+    fun `updateAndLoadOrPlay plays new content on empty layers`() {
+        val output = newOutput()
+        val firstState = output.updateOrLoadAndPlay(1, ContentReference.SolidColor(0u))
+        assertEquals(ContentReference.SolidColor(0u), firstState.content)
+        assertEquals(0, firstState.currentStep)
+    }
+
+    @Test
+    fun `updateAndLoadOrPlay replaces layers that don't match`() {
+        val output = newOutput()
+        val firstState = output.load(1, ContentReference.SolidColor(0u))
+        val secondState = output.updateOrLoadAndPlay(1, ContentReference.SolidColor(1u))
+        assertNotEquals(firstState.id, secondState.id)
+    }
+
+    @Test
+    fun `updateAndLoadOrPlay updates and plays layers with matching content`() {
+        val data = JsonObject(mapOf("foo" to JsonPrimitive("bar")))
+        val output = newOutput()
+        val firstState = output.load(1, ContentReference.SolidColor(0u))
+        assertEquals(-1, firstState.currentStep)
+
+        val secondState = output.updateOrLoadAndPlay(1, ContentReference.SolidColor(0u), data)
+        assertEquals(firstState.id, secondState.id)
+        assertEquals(data, secondState.templateData)
+        assertEquals(0, secondState.currentStep)
+    }
+
+    @Test
+    fun `updateAndLoadOrPlay preserves current step if updating an existing layer`() {
+        val output = newOutput()
+        output.load(1, ContentReference.SolidColor(0u))
+        output.play(1)
+        assertEquals(0, output.state.value[1]?.currentStep)
+
+        output.updateOrLoadAndPlay(1, ContentReference.SolidColor(1u))
+        assertEquals(0, output.state.value[1]?.currentStep)
+    }
 }

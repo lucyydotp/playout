@@ -83,4 +83,36 @@ public class Output(public val name: String, public val config: OutputConfig) {
         state.update { state -> state.replace(layer) { it.copy(currentStep = -1) } }
         logger.info("Stopping content on layer $layer")
     }
+
+    /**
+     * Loads content onto a layer. If the layer has already been loaded with the same content, the
+     * template data is updated and the content is played if necessary. Otherwise, the content is
+     * loaded and immediately played.
+     *
+     * @return the new state of the layer
+     */
+    public fun updateOrLoadAndPlay(
+        layer: Int,
+        content: ContentReference,
+        templateData: JsonObject = JsonObject(emptyMap()),
+    ): LayerState {
+        var layerState: LayerState? = null
+        state.update { state ->
+            val loaded = state[layer]
+
+            val newLayerState =
+                if (loaded != null && loaded.content == content) {
+                    loaded.copy(
+                        templateData = templateData,
+                        currentStep = loaded.currentStep.coerceAtLeast(0),
+                    )
+                } else {
+                    LayerState(UUID.randomUUID(), 0, content, templateData)
+                }
+
+            layerState = newLayerState
+            state + (layer to newLayerState)
+        }
+        return layerState!!
+    }
 }
